@@ -22,6 +22,8 @@ For a description of the algorithms, see:
 * Davies (1996), "Multidimensional Triangulation and Interpolation for Reinforcement Learning", _Proceedings of Neural Information Processing Systems 1996_
 */
 
+// Modifications: code minimization, linear interpolation only
+
 #ifndef _linterp_h
 #define _linterp_h
 
@@ -45,27 +47,6 @@ using std::array;
 typedef unsigned int uint;
 typedef vector<int> iVec;
 typedef vector<double> dVec;
-
-
-// TODO:
-//  - specify behavior past grid boundaries.
-//    1) clamp
-//    2) return a pre-determined value (e.g. NaN)
-
-// compile-time params:
-//   1) number of dimensions
-//   2) scalar type T
-//   3) copy data or not (default: false). The grids will always be copied
-//   4) ref count class (default: none)
-//   5) continuous or not
-
-// run-time constructor params:
-//   1) f
-//   2) grids
-//   3) behavior outside grid: default=clamp
-//   4) value to return outside grid, defaut=nan
-
-struct EmptyClass {};
 
 template <int N, class T, bool CopyData = true, bool Continuous = true, class ArrayRefCountT = EmptyClass, class GridRefCountT = EmptyClass>
 class NDInterpolator {
@@ -368,56 +349,5 @@ public:
 	}
   }
 };	
-
-typedef InterpSimplex<1,double> NDInterpolator_1_S;
-typedef InterpSimplex<2,double> NDInterpolator_2_S;
-typedef InterpSimplex<3,double> NDInterpolator_3_S;
-typedef InterpSimplex<4,double> NDInterpolator_4_S;
-typedef InterpSimplex<5,double> NDInterpolator_5_S;
-typedef InterpMultilinear<1,double> NDInterpolator_1_ML;
-typedef InterpMultilinear<2,double> NDInterpolator_2_ML;
-typedef InterpMultilinear<3,double> NDInterpolator_3_ML;
-typedef InterpMultilinear<4,double> NDInterpolator_4_ML;
-typedef InterpMultilinear<5,double> NDInterpolator_5_ML;
-
-// C interface
-extern "C" {
-  void linterp_simplex_1(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult);
-  void linterp_simplex_2(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult);
-  void linterp_simplex_3(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult);  
-}
-
-void linterp_simplex_1(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult) {
-  const int N=1;
-  size_t total_size = 1;  
-  for (int i=0; i<N; i++)	{     
-	total_size *= grid_len_begin[i];
-  }      
-  InterpSimplex<N, double, false> interp_obj(grids_begin, grid_len_begin, pF, pF + total_size);
-  interp_obj.interp_vec(xi_len, xi_begin, xi_begin + N, pResult);
-}
-
-void linterp_simplex_2(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult) {
-  const int N=2;
-  size_t total_size = 1;  
-  for (int i=0; i<N; i++)	{     
-	total_size *= grid_len_begin[i];
-  }      
-  InterpSimplex<N, double, false> interp_obj(grids_begin, grid_len_begin, pF, pF + total_size);
-  interp_obj.interp_vec(xi_len, xi_begin, xi_begin + N, pResult);
-}
-
-void linterp_simplex_3(double **grids_begin, int *grid_len_begin, double *pF, int xi_len, double **xi_begin, double *pResult) {
-  const int N=3;
-  size_t total_size = 1;  
-  for (int i=0; i<N; i++)	{     
-	total_size *= grid_len_begin[i];
-  }      
-  InterpSimplex<N, double, false> interp_obj(grids_begin, grid_len_begin, pF, pF + total_size);
-  interp_obj.interp_vec(xi_len, xi_begin, xi_begin + N, pResult);
-}
-
-
-
 
 #endif //_linterp_h
