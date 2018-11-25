@@ -350,4 +350,19 @@ public:
   }
 };	
 
+template <class IterT>
+std::pair<vector<typename IterT::value_type::const_iterator>, vector<typename IterT::value_type::const_iterator> > get_begins_ends(IterT iters_begin, IterT iters_end) {
+  typedef typename IterT::value_type T;
+  typedef vector<typename T::const_iterator> VecT;
+  int N = iters_end - iters_begin;
+  std::pair<VecT, VecT> result;
+  result.first.resize(N);
+  result.second.resize(N);
+  for (int i=0; i<N; i++) {
+    result.first[i] = iters_begin[i].begin();
+	result.second[i] = iters_begin[i].end();
+  }
+  return result;
+}
+
 #endif //_linterp_h
