@@ -98,7 +98,7 @@ public:
             nGridPoints *= sizes[i];
         }
         int f_len = f_end - f_begin;
-        if(f_len != nGridPoints)
+        if(f_len != static_cast<int>(nGridPoints))
         {
             throw std::invalid_argument("f has wrong size");
         }
@@ -131,7 +131,7 @@ public:
             {
                 f_index[i] = 0;
             }
-            else if(cell_index[i] >= m_grid_list[i].size()-1)
+            else if(cell_index[i] >= static_cast<int>(m_grid_list[i].size()-1))
             {
                 f_index[i] = m_grid_list[i].size()-1;
             }
@@ -205,7 +205,7 @@ public:
         assert(N == coord_iter_end - coord_iter_begin);
         std::array<int,N> index;
         int c;
-        T y, xi;
+        T y;
         std::vector<T> f(1 << N);
         std::array<T,N> x;
 
@@ -214,13 +214,12 @@ public:
             for(int dim=0; dim<N; dim++)  						// loop over each dimension
             {
                 auto const &grid(super::m_grid_list[dim]);
-                xi = coord_iter_begin[dim][i];
                 c = this->find_cell(dim, coord_iter_begin[dim][i]);
                 if(c == -1)  					// before first grid point
                 {
                     y = 1.0;
                 }
-                else if(c == grid.size()-1)  	// after last grid point
+                else if(c == static_cast<int>(grid.size()-1))  	// after last grid point
                 {
                     y = 0.0;
                 }
